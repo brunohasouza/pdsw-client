@@ -1,0 +1,19 @@
+{
+  "files": [],
+	"compilerOptions": {
+        "useDefineForClassFields": true,
+        "strict": false,
+        "jsx": "preserve",
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "types": ["vite/client", "node"],
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["src/*"]
+		}
+	},
+	"references": [
+		{ "path": "./tsconfig.app.json" },
+		{ "path": "./tsconfig.node.json" }
+	]
+}
