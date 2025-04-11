@@ -25,12 +25,12 @@ export const dateFormat = (
 
 export const factoryReport = (): Report => ({
     id: faker.number.int({ min: 1, max: 1000 }),
-    state: faker.location.state(),
-    city: faker.location.city(),
-    neighborhood: faker.location.state(),
-    street: faker.location.street(),
-    number: faker.location.buildingNumber(),
-    zipcode: faker.location.zipCode('########'),
+    state: 'PE',
+    city: 'Recife',
+    neighborhood: 'Campo Grande',
+    street: 'Rua Mario Sete',
+    number: '176',
+    zipcode: '52040190',
     category: faker.helpers.enumValue(CATEGORY),
     description: faker.lorem.paragraph(),
     status: faker.helpers.enumValue(REPORT_STATUS),

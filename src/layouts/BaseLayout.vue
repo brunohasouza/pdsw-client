@@ -1,11 +1,11 @@
 <template>
     <VAppBar flat class="px-3">
-        <VSpacer />
+        <!-- <VSpacer />
         <VTabs align-tabs="center" color="teal">
             <VTab :to="{ name: 'home' }" text="Cooperativas" />
         </VTabs>
         <VSpacer />
-        <VBtn size="small" variant="outlined" color="error">Sair</VBtn>
+        <VBtn size="small" variant="outlined" color="error">Sair</VBtn> -->
     </VAppBar>
     <VMain>
         <RouterView />
