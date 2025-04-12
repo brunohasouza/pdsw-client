@@ -55,13 +55,19 @@
                 >
             </VForm>
         </VCard>
+        <VSnackbar v-model="snackbar" color="error">{{
+            errorMessage
+        }}</VSnackbar>
     </VContainer>
 </template>
 
 <script setup lang="ts">
-    import { useField, useForm } from 'vee-validate';
     import { ref } from 'vue';
+    import { useRouter } from 'vue-router';
+    import { useField, useForm } from 'vee-validate';
     import * as yup from 'yup';
+    import { AuthService } from '@/services';
+    import { UnauthorizedError } from '@/services/http-errors';
 
     export type LoginData = {
         email: string;
@@ -71,6 +77,9 @@
     const REQUIRED_FIELD = 'Campo obrigatório';
 
     const loading = ref(false);
+    const errorMessage = ref('');
+    const snackbar = ref(false);
+    const router = useRouter();
 
     const { handleSubmit } = useForm<LoginData>({
         validationSchema: yup.object({
@@ -85,8 +94,31 @@
     const email = useField('email');
     const password = useField('password');
 
-    const onSubmit = handleSubmit((values) => {
+    const onSubmit = handleSubmit(async (values) => {
         loading.value = true;
+
+        const service = new AuthService();
+
+        try {
+            const response = await service.login({
+                email: values.email,
+                password: values.password,
+            });
+
+            snackbar.value = false;
+            localStorage.setItem('token', response);
+            router.replace({ name: 'home' });
+        } catch (error) {
+            if (error instanceof UnauthorizedError) {
+                errorMessage.value = 'E-mail ou senha inválidos';
+            } else {
+                errorMessage.value = 'Erro ao fazer login';
+            }
+
+            snackbar.value = true;
+        }
+
+        loading.value = false;
     });
 </script>
 

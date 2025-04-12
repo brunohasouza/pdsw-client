@@ -6,3 +6,10 @@ export class UnexpectedError extends Error {
         this.name = `${code}`;
     }
 }
+
+export class UnauthorizedError extends Error {
+    constructor() {
+        super('Usuário não autorizado');
+        this.name = `${HTTP_STATUS_CODE.UNAUTHORIZED}`;
+    }
+}

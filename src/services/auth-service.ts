@@ -1,5 +1,5 @@
 import { AxiosAdapter, HTTP_STATUS_CODE } from './axios-adapter';
-import { UnexpectedError } from './http-errors';
+import { UnauthorizedError, UnexpectedError } from './http-errors';
 
 export type LoginParams = {
     email: string;
@@ -10,7 +10,6 @@ export type SignupParams = {
     name: string;
     email: string;
     password: string;
-    passwordConfirmation: string;
 };
 
 export class AuthService {
@@ -22,16 +21,22 @@ export class AuthService {
     }
 
     public async login(params: LoginParams) {
-        const { statusCode, data } = await this.client.post({
+        const { statusCode, data } = await this.client.post<
+            string,
+            LoginParams
+        >({
             url: `${this.url}/login`,
             body: params,
         });
 
-        if (statusCode !== HTTP_STATUS_CODE.SUCCESS) {
-            throw new UnexpectedError(statusCode);
+        switch (statusCode) {
+            case HTTP_STATUS_CODE.SUCCESS:
+                return data;
+            case HTTP_STATUS_CODE.UNAUTHORIZED:
+                throw new UnauthorizedError();
+            default:
+                throw new UnexpectedError(statusCode);
         }
-
-        return data;
     }
 
     public async signup(params: SignupParams) {
@@ -45,5 +50,9 @@ export class AuthService {
         }
 
         return data;
+    }
+
+    public logout() {
+        localStorage.removeItem('token');
     }
 }

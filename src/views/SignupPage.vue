@@ -17,31 +17,6 @@
                 />
             </template>
             <VForm class="px-4 pb-4" @submit.prevent="onSubmit">
-                <div class="mb-2 text-center">
-                    <VAvatar size="128" color="grey-lighten-2">
-                        <VImg
-                            v-if="pictureUrl"
-                            aspect-ratio="1"
-                            :src="pictureUrl"
-                        />
-                        <VIcon
-                            v-else
-                            icon="mdi-account"
-                            size="64"
-                            color="grey"
-                        />
-                    </VAvatar>
-                </div>
-                <VFileInput
-                    v-model="picture.value.value"
-                    variant="outlined"
-                    label="Foto de perfil"
-                    density="comfortable"
-                    class="mb-2"
-                    accept="image/png, image/jpeg, image/jpg"
-                    prepend-icon="mdi-camera"
-                    clearable
-                />
                 <VTextField
                     v-model="name.value.value"
                     label="Nome"
@@ -95,13 +70,18 @@
                 />
             </VForm>
         </VCard>
+        <VSnackbar v-model="snackbar.show" :color="snackbar.color">{{
+            snackbar.message
+        }}</VSnackbar>
     </VContainer>
 </template>
 
 <script setup lang="ts">
+    import { reactive, ref } from 'vue';
     import { useField, useForm } from 'vee-validate';
-    import { ref, watchEffect } from 'vue';
     import * as yup from 'yup';
+    import { useRouter } from 'vue-router';
+    import { AuthService } from '@/services';
 
     export type UserBody = {
         email: string;
@@ -111,9 +91,14 @@
     };
 
     const REQUIRED_FIELD = 'Campo obrigatório';
+    const router = useRouter();
 
     const loading = ref(false);
-    const pictureUrl = ref('');
+    const snackbar = reactive({
+        color: 'primary',
+        message: '',
+        show: false,
+    });
 
     const { handleSubmit } = useForm<UserBody>({
         validationSchema: yup.object({
@@ -127,31 +112,38 @@
                 .string()
                 .oneOf([yup.ref('password')], 'Senhas não conferem')
                 .required(REQUIRED_FIELD),
-            picture: yup.mixed().nullable(),
         }),
     });
 
-    const picture = useField<File>('picture');
     const name = useField<string>('name');
     const email = useField<string>('email');
     const password = useField<string>('password');
     const confirm = useField<string>('confirm');
 
-    const onSubmit = handleSubmit((values) => {
+    const onSubmit = handleSubmit(async (values) => {
         loading.value = true;
-    });
 
-    watchEffect(() => {
-        if (!picture.value.value) {
-            pictureUrl.value = '';
-            return;
+        const service = new AuthService();
+
+        try {
+            await service.signup({
+                email: values.email,
+                password: values.password,
+                name: values.name,
+            });
+
+            snackbar.color = 'success';
+            snackbar.message =
+                'Conta criada com sucesso. Redirigindo para login...';
+            snackbar.show = true;
+
+            setTimeout(() => router.replace({ name: 'login' }), 3000);
+        } catch (error) {
+            snackbar.color = 'error';
+            snackbar.message = 'Erro ao criar conta';
+            snackbar.show = true;
         }
 
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            pictureUrl.value = event.target?.result as string;
-        };
-
-        reader.readAsDataURL(picture.value.value as Blob);
+        loading.value = false;
     });
 </script>
