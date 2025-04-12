@@ -1,9 +1,10 @@
-import type { CATEGORY, REPORT_STATUS } from '@/enums';
+import { Mask } from 'maska';
+import { faker } from '@faker-js/faker';
+import { CATEGORY, REPORT_STATUS } from '@/enums';
 import type { Report } from '@/types';
 import { dateFormat } from '@/helpers';
 import { UserModel } from './UserModel';
 import { CooperativeModel } from './CooperativeModel';
-import { Mask } from 'maska';
 import type { Location } from '@/views/HomePage.vue';
 
 export class ReportModel {
@@ -73,9 +74,62 @@ export class ReportModel {
         return new UserModel(this.report.user);
     }
 
+    get toTable() {
+        return {
+            data: this.createdAt,
+            endereço: this.fullAddress,
+            tipo: this.category,
+            status: this.status,
+        };
+    }
+
     get cooperative(): CooperativeModel | null {
         return this.report.cooperative
             ? new CooperativeModel(this.report.cooperative)
             : null;
     }
 }
+
+export const factoryReport = (overrides: Partial<Report> = {}): Report => {
+    const status = faker.helpers.enumValue(REPORT_STATUS);
+    return {
+        id: faker.number.int({ min: 1, max: 1000 }),
+        description: faker.lorem.paragraph(),
+        status,
+        created_at: faker.date.past().toString(),
+        scheduled_at: faker.date.future().toString(),
+        collected_at: faker.date.future().toString(),
+        category: faker.helpers.enumValue(CATEGORY),
+        number: faker.number.int({ min: 1, max: 1000 }).toString(),
+        street: faker.location.street(),
+        city: faker.location.city(),
+        state: faker.location.state(),
+        neighborhood: faker.location.state(),
+        zipcode: faker.location.zipCode('#####-###'),
+        latitude: faker.location.latitude(),
+        longitude: faker.location.longitude(),
+        user: {
+            id: faker.number.int({ min: 1, max: 1000 }),
+            email: faker.internet.email(),
+            name: faker.person.fullName(),
+        },
+        cooperative:
+            status === REPORT_STATUS.PENDING
+                ? undefined
+                : {
+                      id: faker.number.int({ min: 1, max: 1000 }),
+                      name: faker.company.name(),
+                      cnpj: faker.string.numeric(14),
+                      phone: faker.string.numeric(11),
+                      email: faker.internet.email(),
+                  },
+        ...overrides,
+    };
+};
+
+export const factoryReportModelList = (
+    count = faker.number.int({ max: 15 }),
+): ReportModel[] =>
+    Array(count)
+        .fill(false)
+        .map(() => new ReportModel(factoryReport()));

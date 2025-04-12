@@ -20,6 +20,12 @@
     </VNavigationDrawer>
     <VMain>
         <RouterView />
+        <VFab
+            icon="mdi-plus"
+            app
+            color="primary"
+            style="bottom: 1rem; right: 1rem"
+        />
     </VMain>
 </template>
 

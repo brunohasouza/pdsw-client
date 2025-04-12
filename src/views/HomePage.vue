@@ -28,15 +28,14 @@
                 />
             </GoogleMap>
         </VSkeletonLoader>
-        <VSnackbar
-            v-model="snackbar.show"
-            :color="snackbar.color"
-            :timeout="snackbar.timeout"
-            vertical
-        >
+        <VSnackbar v-model="snackbar.show" :color="snackbar.color" vertical>
             {{ snackbar.text }}
             <template #actions>
-                <VBtn color="white" variant="text" @click="fetchData"
+                <VBtn
+                    color="white"
+                    variant="text"
+                    density="comfortable"
+                    @click="fetchData"
                     >Recarregar</VBtn
                 >
             </template>
@@ -66,7 +65,6 @@
         color: 'error',
         text: '',
         show: false,
-        timeout: -1,
     });
 
     const onClickMap = (event: any) => event.placeId && event.stop();
