@@ -4,6 +4,7 @@ export const routes: RouteRecordRaw[] = [
     {
         path: '/',
         component: () => import('@/layouts/BaseLayout.vue'),
+        meta: { auth: true },
         children: [
             {
                 path: '',
@@ -15,6 +16,7 @@ export const routes: RouteRecordRaw[] = [
     {
         path: '/',
         component: () => import('@/layouts/BlankLayout.vue'),
+        meta: { auth: false },
         children: [
             {
                 path: 'login',
