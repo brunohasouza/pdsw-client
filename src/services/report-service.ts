@@ -1,5 +1,7 @@
+import type { Report } from '@/types';
 import { AxiosAdapter } from './axios-adapter';
 import { UnexpectedError } from './http-errors';
+import { ReportModel } from '@/models/ReportModel';
 
 export type ReportParams = {
     description?: string;
@@ -27,7 +29,7 @@ export class ReportService {
     }
 
     public async index(userId?: number) {
-        const { statusCode, data } = await this.client.get({
+        const { statusCode, data } = await this.client.get<Report[]>({
             url: `${this.url}/reports`,
             params: { user_id: userId },
         });
@@ -36,11 +38,14 @@ export class ReportService {
             throw new UnexpectedError(statusCode);
         }
 
-        return data;
+        return data.map((report) => new ReportModel(report));
     }
 
     public async store(params: ReportParams) {
-        const { statusCode, data } = await this.client.post({
+        const { statusCode, data } = await this.client.post<
+            Report,
+            ReportParams
+        >({
             url: `${this.url}/reports`,
             body: params,
             params: { user_id: params.user_id },
@@ -50,11 +55,11 @@ export class ReportService {
             throw new UnexpectedError(statusCode);
         }
 
-        return data;
+        return new ReportModel(data);
     }
 
     public async show(reportId: number) {
-        const { statusCode, data } = await this.client.get({
+        const { statusCode, data } = await this.client.get<Report>({
             url: `${this.url}/reports/${reportId}`,
         });
 
@@ -62,6 +67,6 @@ export class ReportService {
             throw new UnexpectedError(statusCode);
         }
 
-        return data;
+        return new ReportModel(data);
     }
 }

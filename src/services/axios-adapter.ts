@@ -22,7 +22,7 @@ export type HttpPostParams<B = any> = {
 
 export type HttpResponse<R = any> = {
     statusCode: HTTP_STATUS_CODE;
-    data?: R;
+    data: R;
 };
 
 export class AxiosAdapter {

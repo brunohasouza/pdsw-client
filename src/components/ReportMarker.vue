@@ -1,6 +1,6 @@
 <template>
     <CustomMarker
-        :options="{ position: model.position, anchorPoint: 'CENTER' }"
+        :options="{ position: report.position, anchorPoint: 'CENTER' }"
     >
         <VBtn
             icon="mdi-trash-can-outline"
@@ -14,6 +14,7 @@
 <script setup lang="ts">
     import { CustomMarker } from 'vue3-google-map';
     import type { ReportModel } from '@/models/ReportModel';
+    import type { DeepReadonly } from 'vue';
 
-    defineProps<{ model: ReportModel }>();
+    defineProps<{ report: DeepReadonly<ReportModel> }>();
 </script>
