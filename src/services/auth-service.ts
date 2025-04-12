@@ -52,7 +52,7 @@ export class AuthService {
         return data;
     }
 
-    public logout() {
+    public async logout() {
         localStorage.removeItem('token');
     }
 }

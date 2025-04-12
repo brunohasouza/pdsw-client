@@ -8,7 +8,7 @@ export const router = createRouter({
 
 router.beforeEach((to) => {
     if (to.meta.auth && !localStorage.getItem('token')) {
-        return { name: 'login' };
+        // return { name: 'login' };
     }
     if (!to.meta.auth && localStorage.getItem('token')) {
         return { name: 'home' };
