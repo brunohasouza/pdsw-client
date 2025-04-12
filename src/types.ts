@@ -30,4 +30,6 @@ export type Report = {
     zipcode: string;
     user: User;
     cooperative?: Cooperative;
+    latitude: number;
+    longitude: number;
 };

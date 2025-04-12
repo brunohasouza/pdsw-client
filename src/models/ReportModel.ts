@@ -4,6 +4,7 @@ import { dateFormat } from '@/helpers';
 import { UserModel } from './UserModel';
 import { CooperativeModel } from './CooperativeModel';
 import { Mask } from 'maska';
+import type { Location } from '@/views/HomePage.vue';
 
 export class ReportModel {
     constructor(private readonly report: Report) {}
@@ -59,6 +60,13 @@ export class ReportModel {
 
     get fullAddress(): string {
         return `${this.street}, ${this.number} - ${this.neighborhood}, ${this.city} - ${this.state}, ${this.zipcode}`;
+    }
+
+    get position(): Location {
+        return {
+            lat: this.report.latitude,
+            lng: this.report.longitude,
+        };
     }
 
     get user(): UserModel {

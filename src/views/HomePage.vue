@@ -6,7 +6,6 @@
             height="100%"
         >
             <GoogleMap
-                ref="mapRef"
                 :api-key="KEY"
                 :center="userLocation"
                 :zoom="18"
@@ -22,11 +21,6 @@
                 @click="onClickMap"
             >
                 <UserMarker v-bind="userLocation" />
-                <ReportMarker
-                    v-if="mapRef?.ready && mapRef?.api"
-                    :model="report"
-                    :geocoder="new mapRef.api.Geocoder()"
-                />
             </GoogleMap>
         </VSkeletonLoader>
     </VContainer>
@@ -35,9 +29,6 @@
 <script setup lang="ts">
     import { onMounted, ref } from 'vue';
     import { GoogleMap } from 'vue3-google-map';
-    import { ReportModel } from '@/models/ReportModel';
-    import { factoryReport } from '@/helpers';
-    import ReportMarker from '@/components/ReportMarker.vue';
     import UserMarker from '@/components/UserMarker.vue';
 
     export type Location = {
@@ -46,7 +37,6 @@
     };
 
     const KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-    const mapRef = ref<InstanceType<typeof GoogleMap> | null>(null);
     const requestingLocation = ref(false);
     const locationGranted = ref(false);
     const userLocation = ref<Location>({
@@ -60,12 +50,10 @@
         }
     }
 
-    const report = new ReportModel(factoryReport());
-
     onMounted(() => {
         requestingLocation.value = true;
 
-        navigator.geolocation.watchPosition(
+        navigator.geolocation.getCurrentPosition(
             (position) => {
                 userLocation.value = {
                     lat: position.coords.latitude,
